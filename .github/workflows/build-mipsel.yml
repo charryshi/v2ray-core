@@ -1,0 +1,50 @@
+name: Build v2ray for MIPS32 softfloat
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+jobs:
+  build:
+    name: Build for MIPS32 softfloat
+    runs-on: ubuntu-latest
+
+    steps:
+    # Step 1: 检出代码
+    - name: Checkout Code
+      uses: actions/checkout@v3
+
+    # Step 2: 设置 Go 环境
+    - name: Setup Go
+      uses: actions/setup-go@v4
+      with:
+        go-version: 1.20
+
+    # Step 3: 安装依赖
+    - name: Install dependencies
+      run: |
+        apt-get update
+        apt-get install -y gcc-mipsel-linux-gnu musl-tools
+
+    # Step 4: 编译 v2ray-core
+    - name: Build v2ray for MIPS32 softfloat
+      env:
+        GOOS: linux
+        GOARCH: mipsle
+        GOMIPS: softfloat
+      run: |
+        mkdir -p build
+        go build -ldflags "-s -w" -o build/v2ray ./main
+
+    # Step 5: 打包输出
+    - name: Archive build artifacts
+      run: |
+        tar -czvf v2ray-mipsel-softfloat.tar.gz -C build v2ray
+      # 将构建文件上传到 Actions 的构件中
+    - name: Upload artifacts
+      uses: actions/upload-artifact@v3
+      with:
+        name: v2ray-mipsel-softfloat
+        path: v2ray-mipsel-softfloat.tar.gz
