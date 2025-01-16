@@ -25,8 +25,7 @@ jobs:
     # Step 3: 安装依赖
     - name: Install dependencies
       run: |
-        apt-get update
-        apt-get install -y gcc-mipsel-linux-gnu musl-tools
+        sudo apt-get update && sudo apt-get install -y gcc-mipsel-linux-gnu musl-tools
 
     # Step 4: 编译 v2ray-core
     - name: Build v2ray for MIPS32 softfloat
